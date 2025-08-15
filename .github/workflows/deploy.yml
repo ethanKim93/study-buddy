@@ -31,3 +31,8 @@ jobs:
           echo "GITHUB_REPOSITORY_OWNER_NAME: $GITHUB_REPOSITORY_OWNER_NAME"
           echo "GITHUB_REPOSITORY_OWNER_EMAIL: $GITHUB_REPOSITORY_OWNER_EMAIL"
           echo "GITHUB_REPOSITORY_OWNER_AVATAR_URL: $GITHUB_REPOSITORY_OWNER_AVATAR_URL"  
+          
+      - name: Secret 변수 사용해보기
+        run: |
+          echo ${{ secrets.MY_NAME }}
+          echo ${{ secrets.MY_HOBBY }}
