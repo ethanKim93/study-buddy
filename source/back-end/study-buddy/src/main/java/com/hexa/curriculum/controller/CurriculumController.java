@@ -11,6 +11,6 @@ public class CurriculumController {
 
     @GetMapping("")
     public String getCurriculum() {
-        return "Curriculum2";
+        return "Curriculum3 ";
     }
 }
