@@ -11,25 +11,20 @@ jobs:
         steps:
             - name: SSH(원격)로 EC2 접속하기 
               uses : appleboy/ssh-action@master 
+              env:
+                APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
               with:
                 host: ${{ secrets.EC2_HOST }}
                 username: ${{ secrets.EC2_USERNAME }}
                 key: ${{ secrets.EC2_KEY }}
+                envs : APPLICATION_PROPERTIES
+                script_stop: true
                 script: |
                     # 프로젝트 디렉토리로 이동
                     cd /home/ubuntu/study-buddy
-                    
-                    # Git 저장소 상태 확인 및 업데이트
-                    if [ -d ".git" ]; then
-                        git pull origin main
-                    else
-                        echo "Git 저장소가 아닙니다. 클론을 시도합니다."
-                        cd /home/ubuntu
-                        rm -rf study-buddy
-                        git clone https://github.com/your-username/study-buddy.git
-                        cd study-buddy
-                    fi
-                    
+                    rm -rf src/main/resources/application.yml
+                    git pull origin main
+                    echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
                     # 백엔드 디렉토리로 이동
                     cd ./source/back-end/study-buddy
                     
