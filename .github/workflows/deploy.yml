@@ -22,11 +22,14 @@ jobs:
                 script: |
                     # 프로젝트 디렉토리로 이동
                     cd /home/ubuntu/study-buddy
-                    rm -rf src/main/resources/application.yml
                     git pull origin main
-                    echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
+              
                     # 백엔드 디렉토리로 이동
                     cd ./source/back-end/study-buddy
+                    
+                    # 기존 application.yml 삭제 및 새로 생성
+                    rm -rf src/main/resources/application.yml
+                    echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
                     
                     # Gradle 권한 확인 및 빌드
                     chmod +x ./gradlew
