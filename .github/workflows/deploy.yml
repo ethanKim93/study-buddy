@@ -21,6 +21,16 @@ jobs:
                 distribution: 'temurin'
                 java-version: 21
 
+            - name: unzip 설치
+              run: sudo apt-get update && sudo apt-get install -y unzip
+
+            - name: Gradle Wrapper 생성 (Gradle 8.9)
+              run: |
+                curl -sL https://services.gradle.org/distributions/gradle-8.9-bin.zip -o gradle.zip
+                unzip -q gradle.zip -d $HOME
+                $HOME/gradle-8.9/bin/gradle wrapper --gradle-version 8.9
+                rm gradle.zip
+
             - name: application.yml 파일 생성
               run : mkdir -p src/main/resources && printf "%s" "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.yml
 
