@@ -60,6 +60,7 @@ jobs:
                 username: ${{ secrets.EC2_USERNAME }}
                 key: ${{ secrets.EC2_KEY }}
                 script: |
+                    set -e
                     rm -rf /home/ubuntu/study-buddy/back-end/current
                     mkdir /home/ubuntu/study-buddy/back-end/current
                     mv /home/ubuntu/study-buddy/back-end/tobe/project.jar /home/ubuntu/study-buddy/back-end/current/project.jar
