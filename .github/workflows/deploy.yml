@@ -50,6 +50,7 @@ jobs:
                 username: ${{ secrets.EC2_USERNAME }}
                 key: ${{ secrets.EC2_KEY }}
                 source: source/back-end/study-buddy/project.jar
+                strip_components: 3
                 target: /home/ubuntu/study-buddy/back-end/tobe
 
             - name: SSH(원격)로 EC2 접속하기 
@@ -58,7 +59,6 @@ jobs:
                 host: ${{ secrets.EC2_HOST }}
                 username: ${{ secrets.EC2_USERNAME }}
                 key: ${{ secrets.EC2_KEY }}
-                script_stop: true
                 script: |
                     rm -rf /home/ubuntu/study-buddy/back-end/current
                     mkdir /home/ubuntu/study-buddy/back-end/current
