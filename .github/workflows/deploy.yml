@@ -19,39 +19,35 @@ jobs:
                 java-version: 21
 
             - name: application.yml 파일 생성
-              run : echo ${{ secrets.APPLICATION_PROPERTIES }} > ./src/main/resources/application.yml
+              run : echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
             - name : 테스트 및 빌드하기 
               run : ./gradlew clean build
-              
-            - name: SSH(원격)로 EC2 접속하기 
-              uses : appleboy/ssh-action@master 
-              env:
-                APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
+
+            - name : 빌드된 파일 이름 변경하기 
+              run : mv ./build/libs/*SNAPSHOT.jar ./project.jar
+
+            - name: SCP로 EC2에 빌드된 파일 전송하기 
+              uses: appleboy/scp-action@v0.1.7
               with:
                 host: ${{ secrets.EC2_HOST }}
                 username: ${{ secrets.EC2_USERNAME }}
                 key: ${{ secrets.EC2_KEY }}
-                envs : APPLICATION_PROPERTIES
+                source: project.jar
+                target: /home/ubuntu/study-buddy/back-end/tobe
+
+            - name: SSH(원격)로 EC2 접속하기 
+              uses : appleboy/ssh-action@master 
+              with:
+                host: ${{ secrets.EC2_HOST }}
+                username: ${{ secrets.EC2_USERNAME }}
+                key: ${{ secrets.EC2_KEY }}
                 script_stop: true
                 script: |
-                    # 프로젝트 디렉토리로 이동
-                    cd /home/ubuntu/study-buddy
-                    git pull origin main
-              
-                    # 백엔드 디렉토리로 이동
-                    cd ./source/back-end/study-buddy
-
-                    # 기존 application.yml 삭제 및 새로 생성
-                    rm -rf src/main/resources/application.yml
-                    echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
-                    
-                    # Gradle 권한 확인 및 빌드
-                    chmod +x ./gradlew
-                    ./gradlew clean build
-                    
-                    # 기존 프로세스 종료
-                    sudo fuser -k -n tcp 8080 || true
-                    
-                    # 새 애플리케이션 실행
-                    nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
+                    rm -rf /home/ubuntu/study-buddy/back-end/current
+                    mkdir /home/ubuntu/study-buddy/back-end/current
+                    mv /home/ubuntu/study-buddy/back-end/tobe/project.jar /home/ubuntu/study-buddy/back-end/current/project.jar
+                    cd /home/ubuntu/study-buddy/back-end/current
+                    sudo fuser -k -n tcp 8088 || true
+                    nohup java -jar project.jar > ./output.log 2>&1 &
+                    rm -rf /home/ubuntu/study-buddy/back-end/tobe
