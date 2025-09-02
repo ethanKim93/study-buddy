@@ -53,6 +53,15 @@ jobs:
                 aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             
+            - name: S3 버킷 존재 확인 및 생성
+              run: |
+                if ! aws s3api head-bucket --bucket study-buddy-server 2>/dev/null; then
+                  aws s3api create-bucket \
+                    --bucket study-buddy-server \
+                    --region ap-northeast-2 \
+                    --create-bucket-configuration LocationConstraint=ap-northeast-2
+                fi
+
             - name: S3에 프로젝트 폴더 업로드하기
               run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.tar.gz s3://study-buddy-server/$GITHUB_SHA.tar.gz
 
